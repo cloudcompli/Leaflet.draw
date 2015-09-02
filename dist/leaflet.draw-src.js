@@ -1087,7 +1087,7 @@ L.Edit.Marker = L.Handler.extend({
 		if (!this._icon) {
 			return;
 		}
-
+		
 		// This is quite naughty, but I don't see another way of doing it. (short of setting a new icon)
 		var icon = this._icon;
 
@@ -2070,6 +2070,98 @@ L.Draw.Control.RemoveLastPoint = L.ToolbarAction.extend({
 	}
 });
 
+L.Draw = L.Draw || {};
+L.Draw.Control = L.Draw.Control || {};
+
+L.Draw.Control.ToolbarAction = L.ToolbarAction.extend({
+	options: {},
+
+	initialize: function (map, options) {
+		this.drawHandler = new options.DrawAction(map, options);
+
+		this.drawHandler
+			.on('enabled', this.enable, this)
+			.on('disabled', this.disable, this);
+
+		L.ToolbarAction.prototype.initialize.call(this, options);
+	},
+
+	enable: function () {
+		if (this._enabled) { return; }
+
+		L.ToolbarAction.prototype.enable.call(this);
+
+		this.drawHandler.enable();
+	},
+
+	disable: function () {
+		if (!this._enabled) { return; }
+
+		L.ToolbarAction.prototype.disable.call(this);
+
+		this.drawHandler.disable();
+	}
+});
+
+L.Draw.Control.Circle = L.Draw.Control.ToolbarAction.extend({
+	options: {
+		subToolbar: new L.Toolbar({ actions: [L.Draw.Control.Cancel] }),
+
+		toolbarIcon: {
+			className: 'leaflet-draw-draw-circle',
+			tooltip: L.drawLocal.draw.toolbar.buttons.circle
+		}
+	}
+});
+
+L.Draw.Control.Marker = L.Draw.Control.ToolbarAction.extend({
+	options: {
+		subToolbar: new L.Toolbar({ actions: [L.Draw.Control.Cancel] }),
+
+		toolbarIcon: {
+			className: 'leaflet-draw-draw-marker',
+			tooltip: L.drawLocal.draw.toolbar.buttons.marker
+		}
+	}
+});
+
+L.Draw.Control.Polyline = L.Draw.Control.ToolbarAction.extend({
+	options: {
+		subToolbar: new L.Toolbar({ actions: [L.Draw.Control.Cancel, L.Draw.Control.RemoveLastPoint] }),
+
+		toolbarIcon: {
+			className: 'leaflet-draw-draw-polyline',
+			tooltip: L.drawLocal.draw.toolbar.buttons.polyline
+		}
+	},
+
+	deleteLastVertex: function () {
+		this._drawHandler.deleteLastVertex();
+	}
+});
+
+L.Draw.Control.Polygon = L.Draw.Control.Polyline .extend({
+	options: {
+		subToolbar: new L.Toolbar({ actions: [L.Draw.Control.Cancel, L.Draw.Control.RemoveLastPoint] }),
+
+		toolbarIcon: {
+			className: 'leaflet-draw-draw-polygon',
+			tooltip: L.drawLocal.draw.toolbar.buttons.polygon
+		}
+	}
+});
+
+L.Draw.Control.Rectangle = L.Draw.Control.ToolbarAction.extend({
+	options: {
+		subToolbar: new L.Toolbar({ actions: [L.Draw.Control.Cancel] }),
+
+		toolbarIcon: {
+			className: 'leaflet-draw-draw-rectangle',
+			tooltip: L.drawLocal.draw.toolbar.buttons.rectangle
+		}
+	}
+});
+
 L.DrawToolbar.Control = L.Toolbar.Control.extend({
 	options: {
 		className: 'leaflet-draw-toolbar',
@@ -2677,7 +2769,7 @@ L.Edit.Popup.Edit = L.ToolbarAction.extend({
 
 		shape.editing.enable();
 		map.removeLayer(this.toolbar);
-
+		
 		map.on('click', function () {
 			shape.editing.disable();
 		});
