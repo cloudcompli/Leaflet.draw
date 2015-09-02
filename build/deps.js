@@ -56,6 +56,7 @@ var deps = {
 			'draw/DrawToolbar.js',
 			'draw/control/Draw.Control.Cancel.js',
 			'draw/control/Draw.Control.RemoveLastPoint.js',
+			'draw/control/Draw.Control.ToolbarAction.js',
 			'draw/control/DrawToolbar.Control.js'
 		],
 		desc: 'Draw toolbar.',
