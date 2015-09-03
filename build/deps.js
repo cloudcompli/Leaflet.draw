@@ -54,6 +54,7 @@ var deps = {
 	DrawUI: {
 		src: [
 			'draw/DrawToolbar.js',
+			'Control.Draw.js',
 			'draw/control/Draw.Control.Cancel.js',
 			'draw/control/Draw.Control.RemoveLastPoint.js',
 			'draw/control/Draw.Control.ToolbarAction.js',
